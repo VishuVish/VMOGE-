@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 # Constants
-alpha = 7.31  # A/T, depends on the magnet design
+alpha = 7.31  # A/T
 
 
 # Conversion functions
@@ -34,7 +34,7 @@ def cartesian_to_currents(H_x, H_y, H_z):
     I1 = 2 * alpha * H_y - 2 * alpha * H_z
     I2 = 2 * alpha * H_x + 2 * alpha * H_z
     I3 = -2 * alpha * H_x + 2 * alpha * H_y
-    I4 = 0  # Assuming minimum norm solution
+    I4 = 0  # For minimum norm solution
     return I1, I2, I3, I4
 
 
@@ -69,9 +69,7 @@ def calculate_light_path(gamma):
 def update(event=None):
     try:
         if mode.get() == "Polar":
-            # For the H field, use the entry
             H = float(h_entry.get())
-            # For phi_m and theta_m, use the slider variables
             phi_m = phi_var.get()
             theta_m = theta_var.get()
 
@@ -87,20 +85,19 @@ def update(event=None):
             # Update slider positions
             phi_var.set(phi_m)
             theta_var.set(theta_m)
+            
         elif mode.get() == "Currents":
-            # Only update if values are manually changed
             I1 = float(current_entries[0].get())
             I2 = float(current_entries[1].get())
             I3 = float(current_entries[2].get())
             I4 = float(current_entries[3].get())
 
-            # Recalculate Cartesian components from currents
             H_x, H_y, H_z = currents_to_cartesian(I1, I2, I3, I4)
 
             # Normalize the magnetic field vector to maintain fixed magnitude
             H = float(h_entry.get())  # Fixed magnitude from polar input
             magnitude = np.sqrt(H_x**2 + H_y**2 + H_z**2)
-            if magnitude > 0:  # Avoid division by zero
+            if magnitude > 0: 
                 H_x = H_x * (H / magnitude)
                 H_y = H_y * (H / magnitude)
                 H_z = H_z * (H / magnitude)
@@ -301,8 +298,5 @@ fig = plt.figure(figsize=(11, 7))
 ax = fig.add_subplot(111, projection='3d')
 canvas = FigureCanvasTkAgg(fig, master=root)
 canvas.get_tk_widget().grid(row=0, column=1, rowspan=6, padx=10, pady=10)
-
-# Initial update
 update()
-
 root.mainloop()
