@@ -7,7 +7,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 # Constants
 alpha = 7.31  # A/T
 
-
 # Conversion functions
 def polar_to_cartesian(H, phi_m, theta_m):
     H_x = H * np.sin(np.radians(theta_m)) * np.cos(np.radians(phi_m))
@@ -15,20 +14,17 @@ def polar_to_cartesian(H, phi_m, theta_m):
     H_z = H * np.cos(np.radians(theta_m))
     return H_x, H_y, H_z
 
-
 def cartesian_to_polar(H_x, H_y, H_z):
     H = np.sqrt(H_x ** 2 + H_y ** 2 + H_z ** 2)
     phi_m = np.degrees(np.arctan2(H_y, H_x))
     theta_m = np.degrees(np.arccos(H_z / H))
     return H, phi_m, theta_m
-
-
+    
 def currents_to_cartesian(I1, I2, I3, I4):
     H_x = (-I1 - I2 + I3 + I4) / (4 * alpha)
     H_y = (I1 + I2 + I3 + I4) / (4 * alpha)
     H_z = (I1 - I2 - I3 + I4) / (4 * alpha)
     return H_x, H_y, H_z
-
 
 def cartesian_to_currents(H_x, H_y, H_z):
     I1 = 2 * alpha * H_y - 2 * alpha * H_z
@@ -36,7 +32,6 @@ def cartesian_to_currents(H_x, H_y, H_z):
     I3 = -2 * alpha * H_x + 2 * alpha * H_y
     I4 = 0  # For minimum norm solution
     return I1, I2, I3, I4
-
 
 def determine_vmoge_mode(H_x, H_y, H_z):
     # Check for LP-VMOGE (x-z plane, H_y = 0)
@@ -55,7 +50,6 @@ def determine_vmoge_mode(H_x, H_y, H_z):
     else:
         return "3D-VMOGE"
 
-
 # Function to calculate light path
 def calculate_light_path(gamma):
     # Incident light direction (from above the sample, pointing to (0, 0, 0))
@@ -65,16 +59,15 @@ def calculate_light_path(gamma):
     reflected_dir = np.array([np.sin(gamma_rad), 0, np.cos(gamma_rad)])
     return incident_dir, reflected_dir
 
-
 def update(event=None):
     try:
         if mode.get() == "Polar":
             H = float(h_entry.get())
             phi_m = phi_var.get()
             theta_m = theta_var.get()
-
             H_x, H_y, H_z = polar_to_cartesian(H, phi_m, theta_m)
             I1, I2, I3, I4 = cartesian_to_currents(H_x, H_y, H_z)
+            
         elif mode.get() == "Cartesian":
             H_x = float(cartesian_entries[0].get())
             H_y = float(cartesian_entries[1].get())
@@ -91,7 +84,6 @@ def update(event=None):
             I2 = float(current_entries[1].get())
             I3 = float(current_entries[2].get())
             I4 = float(current_entries[3].get())
-
             H_x, H_y, H_z = currents_to_cartesian(I1, I2, I3, I4)
 
             # Normalize the magnetic field vector to maintain fixed magnitude
@@ -210,7 +202,6 @@ phi_entry = ttk.Entry(polar_frame, width=5)
 phi_entry.grid(row=1, column=2, padx=5)
 phi_entry.insert(0, "0")  # Default value
 
-
 # Theta_m slider
 ttk.Label(polar_frame, text="θ_m (°)").grid(row=2, column=0, sticky="w")
 theta_var = tk.DoubleVar(value=90)  # Default value of 90
@@ -221,8 +212,6 @@ theta_value_label = ttk.Label(polar_frame, text="90")
 theta_entry = ttk.Entry(polar_frame, width=5)
 theta_entry.grid(row=2, column=2, padx=5)
 theta_entry.insert(0, "90")  # Default value
-
-
 
 # Update entry fields when sliders change
 def update_angle_labels(*args):
